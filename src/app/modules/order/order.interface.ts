@@ -13,6 +13,11 @@ export enum PaymentStatus {
   UNPAID = 'Unpaid',
 }
 
+export enum PaymentMethod {
+  COD = 'COD',
+  CARD = 'CARD',
+}
+
 export interface IOrderItem {
   product: Types.ObjectId;
   quantity: number;
@@ -26,6 +31,7 @@ export interface IOrder {
   totalPrice: number;
   status: OrderStatus;
   shippingAddress: string;
+  paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   isDeleted?: boolean;
 }

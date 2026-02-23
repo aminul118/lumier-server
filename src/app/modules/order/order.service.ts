@@ -6,6 +6,30 @@ import { Product } from '../product/product.model';
 import { QueryBuilder } from '../../utils/QueryBuilder';
 
 const createOrderIntoDB = async (payload: IOrder) => {
+  // Check stock for each item
+  for (const item of payload.items) {
+    const product = await Product.findById(item.product);
+    if (!product) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        `Product not found: ${item.product}`,
+      );
+    }
+    if (product.stock < item.quantity) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Insufficient stock for ${product.name}. Available: ${product.stock}`,
+      );
+    }
+  }
+
+  // Atomically decrement stock
+  for (const item of payload.items) {
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { stock: -item.quantity },
+    });
+  }
+
   const result = await Order.create(payload);
   return result;
 };

@@ -16,6 +16,8 @@ const productSchema = new Schema<IProduct>(
     featured: { type: Boolean, default: false },
     rating: { type: Number, default: 0 },
     slug: { type: String, required: true, unique: true, trim: true },
+    buyPrice: { type: Number, required: true },
+    stock: { type: Number, default: 0 },
     salePrice: { type: Number, default: 0 },
     soldCount: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },

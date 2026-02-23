@@ -51,19 +51,62 @@ const getAdminStats = async () => {
       },
     ]),
 
-    // total e-commerce sales
+    // financial stats
     Order.aggregate([
       {
         $match: { status: { $ne: OrderStatus.CANCELLED } },
       },
       {
+        $unwind: '$items',
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.product',
+          foreignField: '_id',
+          as: 'productDetails',
+        },
+      },
+      {
+        $addFields: {
+          productDetail: { $arrayElemAt: ['$productDetails', 0] },
+        },
+      },
+      {
         $group: {
           _id: null,
-          total: { $sum: '$totalPrice' },
+          totalRevenue: { $sum: '$totalPrice' }, // This counts total order price (which might include discounts)
+          totalCost: {
+            $sum: { $multiply: ['$items.quantity', '$productDetail.buyPrice'] },
+          },
+        },
+      },
+    ]),
+
+    // Inventory stats
+    Product.aggregate([
+      {
+        $match: { isDeleted: false },
+      },
+      {
+        $group: {
+          _id: null,
+          totalStockValue: { $sum: { $multiply: ['$stock', '$buyPrice'] } },
+          totalStockCount: { $sum: '$stock' },
+          lowStockCount: {
+            $sum: { $cond: [{ $lt: ['$stock', 5] }, 1, 0] },
+          },
         },
       },
     ]),
   ]);
+
+  const financialStats = totalSalesAgg[0] || { totalRevenue: 0, totalCost: 0 };
+  const inventoryStats = userStatusAgg[1] || {
+    totalStockValue: 0,
+    totalStockCount: 0,
+    lowStockCount: 0,
+  };
 
   // Format order status counts
   const orderStatusDistribution = orderStatusAgg.reduce(
@@ -94,7 +137,13 @@ const getAdminStats = async () => {
     },
     productCount: productCount || 0,
     orderCount: orderCount || 0,
-    totalSales: totalSalesAgg[0]?.total || 0,
+    totalSales: financialStats.totalRevenue || 0,
+    totalRevenue: financialStats.totalRevenue || 0,
+    totalCost: financialStats.totalCost || 0,
+    totalProfit:
+      (financialStats.totalRevenue || 0) - (financialStats.totalCost || 0),
+    totalStockValue: inventoryStats.totalStockValue || 0,
+    lowStockCount: inventoryStats.lowStockCount || 0,
     orderStatusDistribution,
     projectCount: 0,
     blogCount: 0,

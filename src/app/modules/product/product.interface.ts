@@ -15,6 +15,8 @@ export interface IProduct {
   featured: boolean;
   rating: number;
   slug: string;
+  buyPrice: number;
+  stock: number;
   salePrice?: number;
   soldCount?: number;
   isDeleted?: boolean;

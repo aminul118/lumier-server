@@ -4,6 +4,7 @@ import {
   IOrderItem,
   OrderStatus,
   PaymentStatus,
+  PaymentMethod,
 } from './order.interface';
 
 const orderItemSchema = new Schema<IOrderItem>(
@@ -29,6 +30,11 @@ const orderSchema = new Schema<IOrder>(
       default: OrderStatus.PENDING,
     },
     shippingAddress: { type: String, required: true },
+    paymentMethod: {
+      type: String,
+      enum: Object.values(PaymentMethod),
+      required: true,
+    },
     paymentStatus: {
       type: String,
       enum: Object.values(PaymentStatus),

@@ -5,11 +5,7 @@ import { Role } from '../user/user.interface';
 
 const router = Router();
 
-router.post(
-  '/',
-  checkAuth(Role.USER, Role.ADMIN, Role.SUPER_ADMIN),
-  OrderControllers.createOrder,
-);
+router.post('/', checkAuth(Role.USER), OrderControllers.createOrder);
 router.get(
   '/',
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
