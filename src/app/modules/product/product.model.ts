@@ -15,6 +15,8 @@ const productSchema = new Schema<IProduct>(
     sizes: { type: [String], required: true },
     featured: { type: Boolean, default: false },
     rating: { type: Number, default: 0 },
+    slug: { type: String, required: true, unique: true, trim: true },
+    salePrice: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
   },
   {

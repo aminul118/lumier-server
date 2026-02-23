@@ -1,10 +1,14 @@
 import httpStatus from 'http-status-codes';
+import { slugify } from 'transliteration';
 import AppError from '../../errorHelpers/AppError';
 import { IProduct } from './product.interface';
 import { Product } from './product.model';
 import { QueryBuilder } from '../../utils/QueryBuilder';
 
 const createProductIntoDB = async (payload: IProduct) => {
+  if (!payload.slug) {
+    payload.slug = slugify(payload.name);
+  }
   const result = await Product.create(payload);
   return result;
 };
@@ -14,7 +18,7 @@ const getAllProductsFromDB = async (query: Record<string, string>) => {
     Product.find({ isDeleted: false }),
     query,
   )
-    .search(['name', 'category', 'subCategory', 'type', 'description'])
+    .search(['name', 'slug', 'category', 'subCategory', 'type', 'description'])
     .filter()
     .sort()
     .paginate()
@@ -29,9 +33,12 @@ const getAllProductsFromDB = async (query: Record<string, string>) => {
   };
 };
 
-const getSingleProductFromDB = async (id: string) => {
-  const result = await Product.findById(id);
-  if (!result || result.isDeleted) {
+const getSingleProductFromDB = async (idOrSlug: string) => {
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+  const query = isObjectId ? { _id: idOrSlug } : { slug: idOrSlug };
+
+  const result = await Product.findOne({ ...query, isDeleted: false });
+  if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
   }
   return result;

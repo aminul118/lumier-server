@@ -1,6 +1,3 @@
-import { Blog } from '../blog/blog.model';
-import { Invoice } from '../invoice/invoice.model';
-import { Project } from '../project/project.model';
 import { User } from '../user/user.model';
 import { IsActive } from '../user/user.interface';
 import { Product } from '../product/product.model';
@@ -10,57 +7,15 @@ import { OrderStatus } from '../order/order.interface';
 const getAdminStats = async () => {
   const [
     userCount,
-    projectCount,
-    blogCount,
-    invoiceCount,
     productCount,
     orderCount,
-    totalEarningsAgg,
-    totalDueAgg,
-    statusCountsAgg,
     userStatusAgg,
     orderStatusAgg,
     totalSalesAgg,
   ] = await Promise.all([
     User.countDocuments({ isDeleted: false }),
-    Project.estimatedDocumentCount(),
-    Blog.estimatedDocumentCount(),
-    Invoice.estimatedDocumentCount(),
     Product.estimatedDocumentCount(),
     Order.countDocuments({ isDeleted: false }),
-
-    // total earnings (PAID invoices) - Portfolio legacy
-    Invoice.aggregate([
-      {
-        $match: { status: 'PAID' },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$grandTotal' },
-        },
-      },
-    ]),
-
-    // total due (PENDING or UNPAID invoices) - Portfolio legacy
-    Invoice.aggregate([
-      {
-        $match: { status: { $in: ['PENDING', 'UNPAID'] } },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$grandTotal' },
-        },
-      },
-    ]),
-
-    // status distribution - Portfolio legacy
-    Invoice.aggregate([
-      {
-        $group: { _id: '$status', count: { $sum: 1 } },
-      },
-    ]),
 
     // user status distribution
     User.aggregate([
@@ -110,15 +65,6 @@ const getAdminStats = async () => {
     ]),
   ]);
 
-  // Format status counts into a cleaner object
-  const statusDistribution = statusCountsAgg.reduce(
-    (acc: Record<string, number>, curr: { _id: string; count: number }) => {
-      acc[curr._id] = curr.count;
-      return acc;
-    },
-    { PAID: 0, UNPAID: 0, PENDING: 0 },
-  );
-
   // Format order status counts
   const orderStatusDistribution = orderStatusAgg.reduce(
     (acc: Record<string, number>, curr: { _id: string; count: number }) => {
@@ -150,13 +96,13 @@ const getAdminStats = async () => {
     orderCount: orderCount || 0,
     totalSales: totalSalesAgg[0]?.total || 0,
     orderStatusDistribution,
-    projectCount,
-    blogCount,
+    projectCount: 0,
+    blogCount: 0,
     invoice: {
-      totalCount: invoiceCount,
-      totalEarnings: totalEarningsAgg[0]?.total || 0,
-      totalDue: totalDueAgg[0]?.total || 0,
-      statusDistribution,
+      totalCount: 0,
+      totalEarnings: 0,
+      totalDue: 0,
+      statusDistribution: { PAID: 0, UNPAID: 0, PENDING: 0 },
     },
   };
 

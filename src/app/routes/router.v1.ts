@@ -10,6 +10,7 @@ import { ColorRoutes } from '../modules/color/color.routes';
 import { ProductRoutes } from '../modules/product/product.routes';
 import { OrderRoutes } from '../modules/order/order.routes';
 import { NavbarRoutes } from '../modules/navbar/navbar.routes';
+import { CouponRoutes } from '../modules/coupon/coupon.routes';
 
 const router = Router();
 
@@ -53,6 +54,10 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/navbar',
     element: NavbarRoutes,
+  },
+  {
+    path: '/coupons',
+    element: CouponRoutes,
   },
 ];
 

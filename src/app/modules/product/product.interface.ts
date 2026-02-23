@@ -14,5 +14,7 @@ export interface IProduct {
   sizes: string[];
   featured: boolean;
   rating: number;
+  slug: string;
+  salePrice?: number;
   isDeleted?: boolean;
 }

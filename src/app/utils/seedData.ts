@@ -1,6 +1,7 @@
 import { Category } from '../modules/category/category.model';
 import { Product } from '../modules/product/product.model';
 import { Navbar } from '../modules/navbar/navbar.model';
+import { slugify } from 'transliteration';
 
 const categoriesData = [
   {
@@ -103,8 +104,10 @@ const seedData = async () => {
         sub.items.forEach((type) => {
           for (let i = 1; i <= 4; i++) {
             const catImg = images[cat.name as keyof typeof images];
+            const name = `${type} ${sub.title.slice(0, -1)} ${i}`;
             products.push({
-              name: `${type} ${sub.title.slice(0, -1)} ${i}`,
+              name,
+              slug: slugify(name),
               category: cat.name,
               subCategory: sub.title,
               type,
@@ -112,12 +115,12 @@ const seedData = async () => {
               rating: Number((Math.random() * (5 - 4) + 4).toFixed(1)),
               image: catImg[i % catImg.length],
               description: `A premium ${type.toLowerCase()} ${sub.title.toLowerCase()} designed for maximum comfort and style.`,
-              details: [
-                'High-quality sustainable materials',
-                'Expertly crafted for a perfect fit',
-                'Limited edition collection',
-                'Easy care and durable',
-              ],
+              details: `<ul>
+                <li>High-quality sustainable materials</li>
+                <li>Expertly crafted for a perfect fit</li>
+                <li>Limited edition collection</li>
+                <li>Easy care and durable</li>
+              </ul>`,
               colors: [
                 cat.colors[i % cat.colors.length],
                 cat.colors[(i + 1) % cat.colors.length],
@@ -132,8 +135,8 @@ const seedData = async () => {
 
     await Product.insertMany(products);
     console.log(`✅ ${products.length} Products seeded`);
-  } catch (error) {
-    console.error('❌ Error seeding data:', error);
+  } catch (error: any) {
+    console.error('❌ Error seeding data:', JSON.stringify(error, null, 2));
   }
 };
 
