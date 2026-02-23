@@ -11,6 +11,10 @@ import { ProductRoutes } from '../modules/product/product.routes';
 import { OrderRoutes } from '../modules/order/order.routes';
 import { NavbarRoutes } from '../modules/navbar/navbar.routes';
 import { CouponRoutes } from '../modules/coupon/coupon.routes';
+import {
+  HeroBannerRoutes,
+  MiniBannerRoutes,
+} from '../modules/hero-banner/hero-banner.routes';
 
 const router = Router();
 
@@ -58,6 +62,14 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/coupons',
     element: CouponRoutes,
+  },
+  {
+    path: '/hero-banners',
+    element: HeroBannerRoutes,
+  },
+  {
+    path: '/mini-banners',
+    element: MiniBannerRoutes,
   },
 ];
 

@@ -8,6 +8,7 @@ export interface IProduct {
   type: string;
   price: number;
   image: string;
+  images?: string[];
   description: string;
   details: string;
   colors: string[];

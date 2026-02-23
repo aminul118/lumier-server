@@ -9,6 +9,7 @@ const productSchema = new Schema<IProduct>(
     type: { type: String, required: true, trim: true },
     price: { type: Number, required: true },
     image: { type: String, required: true },
+    images: { type: [String], default: [] },
     description: { type: String, required: true },
     details: { type: String, default: '' },
     colors: { type: [String], required: true },
