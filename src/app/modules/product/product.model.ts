@@ -10,7 +10,7 @@ const productSchema = new Schema<IProduct>(
     price: { type: Number, required: true },
     image: { type: String, required: true },
     description: { type: String, required: true },
-    details: { type: [String], required: true },
+    details: { type: String, default: '' },
     colors: { type: [String], required: true },
     sizes: { type: [String], required: true },
     featured: { type: Boolean, default: false },

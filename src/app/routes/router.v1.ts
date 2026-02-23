@@ -3,11 +3,7 @@ import { UserRoutes } from '../modules/user/user.routes';
 import { AuthRouter } from '../modules/auth/auth.route';
 import { OTPRouter } from '../modules/otp/otp.route';
 import { IModuleRoutes } from '../types';
-import { BlogRouter } from '../modules/blog/blog.routes';
 import { ContactRouter } from '../modules/contact/contact.route';
-import { ExperienceRouter } from '../modules/experience/experience.routes';
-import { ProjectRouter } from '../modules/project/project.routes';
-import { InvoiceRouter } from '../modules/invoice/invoice.routers';
 import { StatsRouter } from '../modules/stats/stats.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { ColorRoutes } from '../modules/color/color.routes';
@@ -33,24 +29,6 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/contact',
     element: ContactRouter,
-  },
-  {
-    path: '/blogs',
-    element: BlogRouter,
-  },
-  {
-    path: '/projects',
-    element: ProjectRouter,
-  },
-
-  {
-    path: '/experience',
-    element: ExperienceRouter,
-  },
-
-  {
-    path: '/invoice',
-    element: InvoiceRouter,
   },
   {
     path: '/stats',
