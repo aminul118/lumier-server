@@ -2,6 +2,7 @@ import httpStatus from 'http-status-codes';
 import AppError from '../../errorHelpers/AppError';
 import { IOrder } from './order.interface';
 import { Order } from './order.model';
+import { Product } from '../product/product.model';
 import { QueryBuilder } from '../../utils/QueryBuilder';
 
 const createOrderIntoDB = async (payload: IOrder) => {
@@ -69,6 +70,16 @@ const updateOrderStatusIntoDB = async (id: string, status: string) => {
   if (!result || result.isDeleted) {
     throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
   }
+
+  // Increment soldCount if status is DELIVERED
+  if (status === 'Delivered') {
+    for (const item of result.items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { soldCount: item.quantity },
+      });
+    }
+  }
+
   return result;
 };
 

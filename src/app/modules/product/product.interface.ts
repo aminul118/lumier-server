@@ -16,5 +16,6 @@ export interface IProduct {
   rating: number;
   slug: string;
   salePrice?: number;
+  soldCount?: number;
   isDeleted?: boolean;
 }
