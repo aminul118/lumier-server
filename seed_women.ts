@@ -39,7 +39,11 @@ async function seedWomen() {
   await mongoose.connect(DB_URL);
   console.log('Connected to DB');
 
-  // 1. Upsert Category
+  // 1. Delete existing products to avoid duplicates and schema mismatch
+  await Product.deleteMany({});
+  console.log('🗑️ Existing products deleted');
+
+  // 2. Upsert Category
   await Category.findOneAndUpdate(
     { name: 'Women' },
     { ...womenCategory, isDeleted: false },
@@ -47,7 +51,7 @@ async function seedWomen() {
   );
   console.log('✅ Women category updated');
 
-  // 2. Restore/Upsert Navbar Item
+  // 3. Restore/Upsert Navbar Item
   await Navbar.findOneAndUpdate(
     { title: 'Women' },
     {
@@ -64,7 +68,7 @@ async function seedWomen() {
   );
   console.log('✅ Women navbar item restored/updated');
 
-  // 3. Seed Women Products
+  // 4. Seed Women Products
   const products: any[] = [];
   womenCategory.subCategories.forEach((sub) => {
     sub.items.forEach((type) => {
@@ -88,14 +92,10 @@ async function seedWomen() {
           description: `A elegant ${type.toLowerCase()} from our latest Women's ${sub.title.toLowerCase()} collection. Designed for style and comfort.`,
           details:
             'Premium fabric, detailed stitching, and contemporary design. A must-have for any modern wardrobe.',
-          colors: [
+          color:
             womenCategory.colors[
               Math.floor(Math.random() * womenCategory.colors.length)
             ],
-            womenCategory.colors[
-              Math.floor(Math.random() * womenCategory.colors.length)
-            ],
-          ],
           sizes: womenCategory.sizes,
           featured: Math.random() > 0.7,
           stock: Math.floor(Math.random() * 100) + 20,

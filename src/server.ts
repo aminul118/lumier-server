@@ -3,10 +3,8 @@ import { Server } from 'http';
 import app from './app';
 import envVars, { envFile } from './app/config/env';
 import { connectRedis } from './app/config/redis.config';
-
 import connectDB from './app/config/mongodb.config';
 import seedSupperAdmin from './app/utils/seedSuperAdmin';
-import seedData from './app/utils/seedData';
 import serverGracefulShutdown from './app/utils/serverGracefulShutdown';
 
 let server: Server;
@@ -22,7 +20,6 @@ const startServer = async () => {
     });
 
     await seedSupperAdmin();
-    await seedData();
     // Setup shutdown handlers
     serverGracefulShutdown(server);
   } catch (error) {

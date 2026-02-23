@@ -12,7 +12,7 @@ const productSchema = new Schema<IProduct>(
     images: { type: [String], default: [] },
     description: { type: String, required: true },
     details: { type: String, default: '' },
-    colors: { type: [String], required: true },
+    color: { type: String, required: true },
     sizes: { type: [String], required: true },
     featured: { type: Boolean, default: false },
     rating: { type: Number, default: 0 },

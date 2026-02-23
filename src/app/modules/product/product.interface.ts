@@ -11,7 +11,7 @@ export interface IProduct {
   images?: string[];
   description: string;
   details: string;
-  colors: string[];
+  color: string;
   sizes: string[];
   featured: boolean;
   rating: number;
