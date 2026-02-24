@@ -17,10 +17,15 @@ import {
 } from '../modules/hero-banner/hero-banner.routes';
 import { NotificationRoutes } from '../modules/notification/notification.routes';
 import { ChatRoutes } from '../modules/chat/chat.routes';
+import { SiteSettingRoutes } from '../modules/site-setting/site-setting.routes';
 
 const router = Router();
 
 const moduleRoutes: IModuleRoutes[] = [
+  {
+    path: '/site-settings',
+    element: SiteSettingRoutes,
+  },
   {
     path: '/user',
     element: UserRoutes,
@@ -80,6 +85,10 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/chat',
     element: ChatRoutes,
+  },
+  {
+    path: '/site-settings',
+    element: SiteSettingRoutes,
   },
 ];
 
