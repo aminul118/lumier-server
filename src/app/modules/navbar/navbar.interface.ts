@@ -4,6 +4,9 @@ export interface INavSubItem {
   title: string;
   href: string;
   items: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 export interface INavItem {
@@ -13,4 +16,7 @@ export interface INavItem {
   subItems?: INavSubItem[];
   order: number;
   isDeleted?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
