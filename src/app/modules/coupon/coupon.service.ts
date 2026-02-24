@@ -57,10 +57,29 @@ const deleteCouponFromDB = async (id: string) => {
   return result;
 };
 
+const validateCouponFromDB = async (code: string) => {
+  const result = await Coupon.findOne({
+    code: code.toUpperCase(),
+    isDeleted: false,
+  });
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Invalid Coupon Code');
+  }
+
+  const currentDate = new Date();
+  if (result.expiryDate < currentDate) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Coupon has expired');
+  }
+
+  return result;
+};
+
 export const CouponServices = {
   createCouponIntoDB,
   getAllCouponsFromDB,
   getSingleCouponFromDB,
   updateCouponIntoDB,
   deleteCouponFromDB,
+  validateCouponFromDB,
 };

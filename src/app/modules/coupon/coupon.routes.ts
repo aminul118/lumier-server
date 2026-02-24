@@ -11,6 +11,7 @@ router.post(
   CouponControllers.createCoupon,
 );
 router.get('/', CouponControllers.getAllCoupons);
+router.get('/validate/:code', CouponControllers.validateCoupon);
 router.get('/:id', CouponControllers.getSingleCoupon);
 router.patch(
   '/:id',
