@@ -16,8 +16,14 @@ const getSiteSetting = catchAsync(async (req: Request, res: Response) => {
 
 const updateSiteSetting = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
-  if (req.file) {
-    payload.logo = req.file.path;
+  const files = req.files as Record<string, Express.Multer.File[]>;
+
+  if (files?.logo?.[0]) {
+    payload.logo = files.logo[0].path;
+  }
+
+  if (files?.baseImage?.[0]) {
+    payload.baseImage = files.baseImage[0].path;
   }
 
   if (typeof payload.socialLinks === 'string') {

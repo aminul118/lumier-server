@@ -7,4 +7,8 @@ export interface ISocialLink {
 export interface ISiteSetting {
   logo: string;
   socialLinks: ISocialLink[];
+  title?: string;
+  description?: string;
+  keywords?: string;
+  baseImage?: string;
 }

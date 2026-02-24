@@ -4,6 +4,7 @@ import { INavItem, INavSubItem } from './navbar.interface';
 const navSubItemSchema = new Schema<INavSubItem>(
   {
     title: { type: String, required: true },
+    href: { type: String, required: true },
     items: { type: [String], required: true },
   },
   {

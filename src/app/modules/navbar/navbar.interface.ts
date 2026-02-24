@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 
 export interface INavSubItem {
   title: string;
+  href: string;
   items: string[];
 }
 

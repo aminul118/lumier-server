@@ -40,6 +40,20 @@ const updateSiteSettingIntoDB = async (payload: Partial<ISiteSetting>) => {
     }
   }
 
+  if (
+    payload.baseImage &&
+    currentSettings?.baseImage &&
+    payload.baseImage !== currentSettings.baseImage
+  ) {
+    // Delete previous baseImage from cloudinary
+    try {
+      await deleteFileFromCloudinary(currentSettings.baseImage);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to delete old baseImage from Cloudinary:', error);
+    }
+  }
+
   const result = await SiteSetting.findOneAndUpdate({}, payload, {
     new: true,
     upsert: true,

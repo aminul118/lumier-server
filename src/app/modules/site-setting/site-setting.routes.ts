@@ -11,7 +11,10 @@ router.get('/', SiteSettingControllers.getSiteSetting);
 router.patch(
   '/',
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  multerUpload.single('file'),
+  multerUpload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'baseImage', maxCount: 1 },
+  ]),
   SiteSettingControllers.updateSiteSetting,
 );
 

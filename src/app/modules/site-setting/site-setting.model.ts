@@ -14,6 +14,10 @@ const siteSettingSchema = new Schema<ISiteSetting>(
   {
     logo: { type: String, required: true },
     socialLinks: [socialLinkSchema],
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    keywords: { type: String, default: '' },
+    baseImage: { type: String, default: '' },
   },
   {
     timestamps: true,
