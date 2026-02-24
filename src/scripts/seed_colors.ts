@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Color } from './src/app/modules/color/color.model';
+import { Color } from '../app/modules/color/color.model';
 
 const DB_URL = 'mongodb://localhost:27017/Lumiere';
 

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { Category } from './src/app/modules/category/category.model';
-import { Product } from './src/app/modules/product/product.model';
-import { Navbar } from './src/app/modules/navbar/navbar.model';
+import { Category } from '../app/modules/category/category.model';
+import { Product } from '../app/modules/product/product.model';
+import { Navbar } from '../app/modules/navbar/navbar.model';
 import { slugify } from 'transliteration';
 
 const DB_URL = 'mongodb://localhost:27017/Lumiere';

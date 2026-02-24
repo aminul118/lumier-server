@@ -16,6 +16,7 @@ import {
   MiniBannerRoutes,
 } from '../modules/hero-banner/hero-banner.routes';
 import { NotificationRoutes } from '../modules/notification/notification.routes';
+import { ChatRoutes } from '../modules/chat/chat.routes';
 
 const router = Router();
 
@@ -75,6 +76,10 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/notifications',
     element: NotificationRoutes,
+  },
+  {
+    path: '/chat',
+    element: ChatRoutes,
   },
 ];
 
