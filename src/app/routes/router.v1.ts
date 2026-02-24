@@ -15,6 +15,7 @@ import {
   HeroBannerRoutes,
   MiniBannerRoutes,
 } from '../modules/hero-banner/hero-banner.routes';
+import { NotificationRoutes } from '../modules/notification/notification.routes';
 
 const router = Router();
 
@@ -70,6 +71,10 @@ const moduleRoutes: IModuleRoutes[] = [
   {
     path: '/mini-banners',
     element: MiniBannerRoutes,
+  },
+  {
+    path: '/notifications',
+    element: NotificationRoutes,
   },
 ];
 

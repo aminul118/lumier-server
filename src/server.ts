@@ -6,6 +6,7 @@ import { connectRedis } from './app/config/redis.config';
 import connectDB from './app/config/mongodb.config';
 import seedSupperAdmin from './app/utils/seedSuperAdmin';
 import serverGracefulShutdown from './app/utils/serverGracefulShutdown';
+import { initSocket } from './app/config/socket';
 
 let server: Server;
 
@@ -18,6 +19,9 @@ const startServer = async () => {
       console.log('🔐 ENV File ->', envFile);
       console.log(`✅ Server is running on port ${envVars.PORT}`);
     });
+
+    // Initialize Socket.io
+    initSocket(server);
 
     await seedSupperAdmin();
     // Setup shutdown handlers
