@@ -29,4 +29,10 @@ router.patch(
   ChatController.markAsSeen,
 );
 
+router.get(
+  '/unread-count',
+  checkAuth(Role.ADMIN, Role.USER),
+  ChatController.getUnreadCount,
+);
+
 export const ChatRoutes = router;

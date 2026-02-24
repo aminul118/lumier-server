@@ -1,8 +1,10 @@
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery, Types } from 'mongoose';
 import { Message, Conversation } from './chat.model';
 import { IMessage, IConversation } from './chat.interface';
 import { User } from '../user/user.model';
 import { Role } from '../user/user.interface';
+import { NotificationServices } from '../notification/notification.service';
+import { Notification } from '../notification/notification.model';
 
 const sendMessage = async (payload: IMessage) => {
   const message = await Message.create(payload);
@@ -13,6 +15,33 @@ const sendMessage = async (payload: IMessage) => {
     lastMessageTime: new Date(),
     $inc: { unreadCount: 1 },
   });
+
+  // Create notification for the receiver
+  const sender = await User.findById(payload.sender);
+  if (sender) {
+    // Clear existing chat notifications for this conversation for the receiver
+    await Notification.updateMany(
+      {
+        conversationId: payload.conversationId,
+        type: 'Chat',
+        user: payload.receiver,
+        isRead: false,
+      },
+      { isRead: true },
+    );
+
+    await NotificationServices.createNotification({
+      title: `New message from ${sender.firstName}`,
+      message:
+        payload.text.substring(0, 50) + (payload.text.length > 50 ? '...' : ''),
+      type: 'Chat',
+      user: payload.receiver, // This correctly handles both Admin (receiver=null/admins) and User
+      isRead: false,
+      isDeleted: false,
+      conversationId: payload.conversationId as Types.ObjectId,
+      link: sender.role === Role.USER ? '/admin/chat' : '/profile/chat',
+    });
+  }
 
   return message;
 };
@@ -81,6 +110,32 @@ const markMessagesAsSeen = async (conversationId: string, userId: string) => {
   );
 
   await Conversation.findByIdAndUpdate(conversationId, { unreadCount: 0 });
+
+  // Clear related notifications
+  await Notification.updateMany(
+    {
+      conversationId,
+      user: userId,
+      type: 'Chat',
+      isRead: false,
+    },
+    { isRead: true },
+  );
+};
+
+const getUnreadCount = async (userId: string, role: string) => {
+  const query: FilterQuery<IConversation> = {
+    unreadCount: { $gt: 0 },
+    isDeleted: false,
+  };
+
+  if (role === Role.USER) {
+    query.participants = userId;
+  }
+  // For Admin, it shows all conversations with unread messages
+
+  const conversations = await Conversation.find(query);
+  return conversations.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0);
 };
 
 export const ChatService = {
@@ -90,4 +145,5 @@ export const ChatService = {
   getOrCreateConversation,
   getMyConversations,
   markMessagesAsSeen,
+  getUnreadCount,
 };

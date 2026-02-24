@@ -1,9 +1,15 @@
 import { INotification } from './notification.interface';
 import { Notification } from './notification.model';
+import { emitToRoom } from '../../config/socket';
 
 const createNotification = async (payload: INotification) => {
   const result = await Notification.create(payload);
-  return result;
+  if (result.user) {
+    emitToRoom(result.user.toString(), 'new-notification', result);
+  } else {
+    // Notify all admins for system-wide notifications
+    emitToRoom('admins', 'new-notification', result);
+  }
 };
 
 const getMyNotifications = async (userId: string | undefined) => {

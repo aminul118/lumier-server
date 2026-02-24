@@ -61,9 +61,24 @@ const markAsSeen = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getUnreadCount = catchAsync(async (req: Request, res: Response) => {
+  const authReq = req as unknown as AuthRequest;
+  const result = await ChatService.getUnreadCount(
+    authReq.user._id,
+    authReq.user.role,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Unread count retrieved successfully',
+    data: result,
+  });
+});
+
 export const ChatController = {
   getMyConversations,
   getOrCreateConversation,
   getMessages,
   markAsSeen,
+  getUnreadCount,
 };

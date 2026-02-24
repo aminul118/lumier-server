@@ -151,7 +151,7 @@ const updateOrderStatusIntoDB = async (id: string, status: string) => {
     });
 
     // Notify Specific User
-    emitToRoom(`user_${result.user}`, 'order-status-updated', {
+    emitToRoom(result.user.toString(), 'order-status-updated', {
       orderId: result._id,
       status: result.status,
       message: `Your order status has been updated to ${status}`,

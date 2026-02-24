@@ -17,7 +17,7 @@ const notificationSchema = new Schema<INotification>(
     },
     type: {
       type: String,
-      enum: ['Order', 'System', 'Payment'],
+      enum: ['Order', 'System', 'Payment', 'Chat'],
       default: 'Order',
     },
     isRead: {
@@ -27,6 +27,10 @@ const notificationSchema = new Schema<INotification>(
     orderId: {
       type: Schema.Types.ObjectId,
       ref: 'Order',
+    },
+    conversationId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Conversation',
     },
     isDeleted: {
       type: Boolean,
