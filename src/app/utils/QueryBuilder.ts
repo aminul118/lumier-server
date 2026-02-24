@@ -19,11 +19,16 @@ export class QueryBuilder<T> {
       Object.entries(this.query).filter(([key]) => !excludeField.includes(key)),
     );
 
-    // Handle comma separated values for $in
+    // Handle comma separated values for $in and case-insensitive matching for specific fields
     Object.keys(filter).forEach((key) => {
       const value = filter[key];
-      if (typeof value === 'string' && value.includes(',')) {
-        filter[key] = { $in: value.split(',') };
+      if (typeof value === 'string') {
+        if (value.includes(',')) {
+          filter[key] = { $in: value.split(',') };
+        } else if (['category', 'subCategory', 'type'].includes(key)) {
+          // Exact match but case-insensitive
+          filter[key] = { $regex: `^${value}$`, $options: 'i' };
+        }
       }
     });
 
