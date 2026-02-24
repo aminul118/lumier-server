@@ -15,12 +15,17 @@ export class QueryBuilder<T> {
 
   /** Apply filters from query */
   filter(): this {
-    const filter: Record<string, string> = { ...this.query };
+    const filter: Record<string, any> = Object.fromEntries(
+      Object.entries(this.query).filter(([key]) => !excludeField.includes(key)),
+    );
 
-    for (const field of excludeField) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete filter[field];
-    }
+    // Handle comma separated values for $in
+    Object.keys(filter).forEach((key) => {
+      const value = filter[key];
+      if (typeof value === 'string' && value.includes(',')) {
+        filter[key] = { $in: value.split(',') };
+      }
+    });
 
     this.filterQuery = filter;
     this.modelQuery = this.modelQuery.find(this.filterQuery);
@@ -30,7 +35,8 @@ export class QueryBuilder<T> {
 
   /** Apply search on searchable fields */
   search(searchableField: string[]): this {
-    const searchTerm = this.query.search || this.query.searchTerm || '';
+    const searchTerm =
+      this.query.search || this.query.searchTerm || this.query.q || '';
     if (!searchTerm) return this;
 
     this.searchQuery = {
@@ -74,10 +80,9 @@ export class QueryBuilder<T> {
 
   /** Get meta for pagination */
   async getMeta() {
-    const totalDocuments = await this.modelQuery.model.countDocuments({
-      ...this.filterQuery,
-      ...this.searchQuery,
-    });
+    // Use the actual filter from the query object to include base conditions (like isDeleted: false)
+    const filter = this.modelQuery.getFilter();
+    const totalDocuments = await this.modelQuery.model.countDocuments(filter);
 
     const page = Number(this.query.page) || 1;
     const limit = Number(this.query.limit) || 10;

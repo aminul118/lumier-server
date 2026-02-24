@@ -5,4 +5,6 @@ export const excludeField: string[] = [
   'fields',
   'page',
   'limit',
+  'q',
+  'view',
 ];
