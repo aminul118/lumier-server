@@ -22,6 +22,11 @@ const sendMessage = async (payload: IMessage) => {
   const sender = await User.findById(payload.sender);
   if (sender) {
     const receiverId = payload.receiver?.toString();
+    // eslint-disable-next-line no-console
+    console.log(
+      `Sending message: Sender ${sender._id} (${sender.role}), Receiver ${receiverId}, Conv ${payload.conversationId}`,
+    );
+
     const isInChat =
       receiverId &&
       isRecipientInActiveChat(receiverId, payload.conversationId.toString());

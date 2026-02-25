@@ -7,12 +7,10 @@ import { JwtPayload } from 'jsonwebtoken';
 
 const getMyNotifications = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
-  // If admin, we fetch system notifications (where user is not set)
-  const userId =
-    user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
-      ? undefined
-      : user.userId;
-  const result = await NotificationServices.getMyNotifications(userId);
+  const result = await NotificationServices.getMyNotifications(
+    user.userId,
+    user.role,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -34,11 +32,10 @@ const markAsRead = catchAsync(async (req: Request, res: Response) => {
 
 const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
-  const userId =
-    user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
-      ? undefined
-      : user.userId;
-  const result = await NotificationServices.markAllAsRead(userId);
+  const result = await NotificationServices.markAllAsRead(
+    user.userId,
+    user.role,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -49,11 +46,7 @@ const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
 
 const clearAll = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
-  const userId =
-    user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
-      ? undefined
-      : user.userId;
-  const result = await NotificationServices.clearAll(userId);
+  const result = await NotificationServices.clearAll(user.userId, user.role);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

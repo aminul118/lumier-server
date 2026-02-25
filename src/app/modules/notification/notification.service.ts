@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import { INotification } from './notification.interface';
 import { Notification } from './notification.model';
 import { emitToRoom } from '../../config/socket';
@@ -12,10 +13,25 @@ const createNotification = async (payload: INotification) => {
   }
 };
 
-const getMyNotifications = async (userId: string | undefined) => {
-  // If userId is undefined, it's for admins (system-wide notifications)
-  const query = userId ? { user: userId } : { user: { $exists: false } };
-  const result = await Notification.find(query).sort({ createdAt: -1 });
+const getMyNotifications = async (
+  userId: string | undefined,
+  role?: string,
+) => {
+  let query: FilterQuery<INotification>;
+  if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+    // Admins get notifications specifically for them AND system-wide ones (no user set)
+    query = userId
+      ? {
+          $or: [{ user: userId }, { user: { $exists: false } }, { user: null }],
+        }
+      : { user: { $exists: false } };
+  } else {
+    query = { user: userId };
+  }
+
+  const result = await Notification.find({ ...query, isDeleted: false }).sort({
+    createdAt: -1,
+  });
   return result;
 };
 
@@ -28,14 +44,32 @@ const markAsRead = async (id: string) => {
   return result;
 };
 
-const markAllAsRead = async (userId: string | undefined) => {
-  const query = userId ? { user: userId } : { user: { $exists: false } };
+const markAllAsRead = async (userId: string | undefined, role?: string) => {
+  let query: FilterQuery<INotification>;
+  if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+    query = userId
+      ? {
+          $or: [{ user: userId }, { user: { $exists: false } }, { user: null }],
+        }
+      : { user: { $exists: false } };
+  } else {
+    query = { user: userId };
+  }
   const result = await Notification.updateMany(query, { isRead: true });
   return result;
 };
 
-const clearAll = async (userId: string | undefined) => {
-  const query = userId ? { user: userId } : { user: { $exists: false } };
+const clearAll = async (userId: string | undefined, role?: string) => {
+  let query: FilterQuery<INotification>;
+  if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+    query = userId
+      ? {
+          $or: [{ user: userId }, { user: { $exists: false } }, { user: null }],
+        }
+      : { user: { $exists: false } };
+  } else {
+    query = { user: userId };
+  }
   const result = await Notification.updateMany(query, { isDeleted: true });
   return result;
 };
