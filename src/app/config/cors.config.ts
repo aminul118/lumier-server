@@ -3,8 +3,7 @@ import { logger } from '../utils/logger';
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://aminuldev.site',
-  'https://www.aminuldev.site',
+  'https://lumier-client-production.up.railway.app',
 ];
 
 /**
