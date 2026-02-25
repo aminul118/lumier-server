@@ -8,14 +8,12 @@ export interface AuthTokens {
 export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const sameSite = isProduction ? 'none' : 'lax'; // allow cross-subdomain in prod
-  const domain = isProduction ? '.railway.app' : undefined;
 
   if (tokenInfo.accessToken) {
     res.cookie('accessToken', tokenInfo.accessToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite,
-      domain,
       path: '/', // always include
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     });
@@ -26,7 +24,6 @@ export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
       httpOnly: true,
       secure: isProduction,
       sameSite,
-      domain,
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 30, // 7 days
     });

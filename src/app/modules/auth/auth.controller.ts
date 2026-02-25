@@ -69,13 +69,11 @@ const getNewAccessToken = catchAsync(async (req: Request, res: Response) => {
 const logout = catchAsync(async (req: Request, res: Response) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const sameSite = isProduction ? 'none' : 'lax';
-  const domain = isProduction ? '.aminuldev.site' : undefined;
 
   res.clearCookie('accessToken', {
     httpOnly: true,
     secure: isProduction,
     sameSite,
-    domain,
     path: '/',
   });
 
@@ -83,7 +81,6 @@ const logout = catchAsync(async (req: Request, res: Response) => {
     httpOnly: true,
     secure: isProduction,
     sameSite,
-    domain,
     path: '/',
   });
 
