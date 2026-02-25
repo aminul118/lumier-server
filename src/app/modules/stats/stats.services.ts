@@ -5,16 +5,25 @@ import { Order } from '../order/order.model';
 import { OrderStatus } from '../order/order.interface';
 
 const getAdminStats = async () => {
+  const now = new Date();
+  const todayStart = new Date(now.setHours(0, 0, 0, 0));
+  const last7Days = new Date(new Date().setDate(now.getDate() - 7));
+  const last15Days = new Date(new Date().setDate(now.getDate() - 15));
+  const last30Days = new Date(new Date().setDate(now.getDate() - 30));
+
   const [
     userCount,
     productCount,
     orderCount,
     userStatusAgg,
     orderStatusAgg,
-    totalSalesAgg,
+    financialStatsAgg,
+    inventoryStatsAgg,
+    timeBasedOrdersAgg,
+    revenueTrendAgg,
   ] = await Promise.all([
     User.countDocuments({ isDeleted: false }),
-    Product.estimatedDocumentCount(),
+    Product.countDocuments({ isDeleted: false }),
     Order.countDocuments({ isDeleted: false }),
 
     // user status distribution
@@ -75,7 +84,7 @@ const getAdminStats = async () => {
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: '$totalPrice' }, // This counts total order price (which might include discounts)
+          totalRevenue: { $sum: '$totalPrice' },
           totalCost: {
             $sum: { $multiply: ['$items.quantity', '$productDetail.buyPrice'] },
           },
@@ -92,6 +101,7 @@ const getAdminStats = async () => {
         $group: {
           _id: null,
           totalStockValue: { $sum: { $multiply: ['$stock', '$buyPrice'] } },
+          totalSaleValue: { $sum: { $multiply: ['$stock', '$price'] } },
           totalStockCount: { $sum: '$stock' },
           lowStockCount: {
             $sum: { $cond: [{ $lt: ['$stock', 5] }, 1, 0] },
@@ -99,14 +109,66 @@ const getAdminStats = async () => {
         },
       },
     ]),
+
+    // Time-based order counts
+    Order.aggregate([
+      {
+        $match: { isDeleted: false },
+      },
+      {
+        $facet: {
+          today: [
+            { $match: { createdAt: { $gte: todayStart } } },
+            { $count: 'count' },
+          ],
+          last7Days: [
+            { $match: { createdAt: { $gte: last7Days } } },
+            { $count: 'count' },
+          ],
+          last15Days: [
+            { $match: { createdAt: { $gte: last15Days } } },
+            { $count: 'count' },
+          ],
+          last30Days: [
+            { $match: { createdAt: { $gte: last30Days } } },
+            { $count: 'count' },
+          ],
+        },
+      },
+    ]),
+
+    // Revenue trend (last 30 days)
+    Order.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+          status: { $ne: OrderStatus.CANCELLED },
+          createdAt: { $gte: last30Days },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          revenue: { $sum: '$totalPrice' },
+          orders: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]),
   ]);
 
-  const financialStats = totalSalesAgg[0] || { totalRevenue: 0, totalCost: 0 };
-  const inventoryStats = userStatusAgg[1] || {
+  const financialStats = financialStatsAgg[0] || {
+    totalRevenue: 0,
+    totalCost: 0,
+  };
+  const inventoryStats = inventoryStatsAgg[0] || {
     totalStockValue: 0,
+    totalSaleValue: 0,
     totalStockCount: 0,
     lowStockCount: 0,
   };
+
+  const timeBasedOrders = timeBasedOrdersAgg[0];
 
   // Format order status counts
   const orderStatusDistribution = orderStatusAgg.reduce(
@@ -118,8 +180,8 @@ const getAdminStats = async () => {
   );
 
   // Format user status counts
-  const userStats = userStatusAgg[0];
-  const userStatusDistribution = userStats.statusCounts.reduce(
+  const userStatsResult = userStatusAgg[0];
+  const userStatusDistribution = userStatsResult.statusCounts.reduce(
     (acc: Record<string, number>, curr: { _id: IsActive; count: number }) => {
       acc[curr._id] = curr.count;
       return acc;
@@ -133,7 +195,7 @@ const getAdminStats = async () => {
       activeCount: userStatusDistribution.ACTIVE,
       inactiveCount: userStatusDistribution.INACTIVE,
       blockedCount: userStatusDistribution.BLOCKED,
-      deletedCount: userStats.deletedCount[0]?.count || 0,
+      deletedCount: userStatsResult.deletedCount[0]?.count || 0,
     },
     productCount: productCount || 0,
     orderCount: orderCount || 0,
@@ -143,8 +205,22 @@ const getAdminStats = async () => {
     totalProfit:
       (financialStats.totalRevenue || 0) - (financialStats.totalCost || 0),
     totalStockValue: inventoryStats.totalStockValue || 0,
+    totalSaleValue: inventoryStats.totalSaleValue || 0,
     lowStockCount: inventoryStats.lowStockCount || 0,
     orderStatusDistribution,
+    timeBasedOrders: {
+      today: timeBasedOrders.today[0]?.count || 0,
+      last7Days: timeBasedOrders.last7Days[0]?.count || 0,
+      last15Days: timeBasedOrders.last15Days[0]?.count || 0,
+      last30Days: timeBasedOrders.last30Days[0]?.count || 0,
+    },
+    revenueTrend: revenueTrendAgg.map(
+      (item: { _id: string; revenue: number; orders: number }) => ({
+        date: item._id,
+        revenue: item.revenue,
+        orders: item.orders,
+      }),
+    ),
     projectCount: 0,
     blogCount: 0,
     invoice: {
