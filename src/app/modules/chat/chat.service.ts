@@ -6,6 +6,8 @@ import { Role } from '../user/user.interface';
 import { NotificationServices } from '../notification/notification.service';
 import { Notification } from '../notification/notification.model';
 
+import { isRecipientInActiveChat } from '../../config/socket';
+
 const sendMessage = async (payload: IMessage) => {
   const message = await Message.create(payload);
 
@@ -19,28 +21,36 @@ const sendMessage = async (payload: IMessage) => {
   // Create notification for the receiver
   const sender = await User.findById(payload.sender);
   if (sender) {
-    // Clear existing chat notifications for this conversation for the receiver
-    await Notification.updateMany(
-      {
-        conversationId: payload.conversationId,
-        type: 'Chat',
-        user: payload.receiver,
-        isRead: false,
-      },
-      { isRead: true },
-    );
+    const receiverId = payload.receiver?.toString();
+    const isInChat =
+      receiverId &&
+      isRecipientInActiveChat(receiverId, payload.conversationId.toString());
 
-    await NotificationServices.createNotification({
-      title: `New message from ${sender.firstName}`,
-      message:
-        payload.text.substring(0, 50) + (payload.text.length > 50 ? '...' : ''),
-      type: 'Chat',
-      user: payload.receiver, // This correctly handles both Admin (receiver=null/admins) and User
-      isRead: false,
-      isDeleted: false,
-      conversationId: payload.conversationId as Types.ObjectId,
-      link: sender.role === Role.USER ? '/admin/chat' : '/profile/chat',
-    });
+    if (!isInChat) {
+      // Clear existing chat notifications for this conversation for the receiver
+      await Notification.updateMany(
+        {
+          conversationId: payload.conversationId,
+          type: 'Chat',
+          user: payload.receiver,
+          isRead: false,
+        },
+        { isRead: true },
+      );
+
+      await NotificationServices.createNotification({
+        title: `New message from ${sender.firstName}`,
+        message:
+          payload.text.substring(0, 50) +
+          (payload.text.length > 50 ? '...' : ''),
+        type: 'Chat',
+        user: payload.receiver, // This correctly handles both Admin (receiver=null/admins) and User
+        isRead: false,
+        isDeleted: false,
+        conversationId: payload.conversationId as Types.ObjectId,
+        link: sender.role === Role.USER ? '/admin/chat' : '/profile/chat',
+      });
+    }
   }
 
   return message;

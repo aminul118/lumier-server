@@ -3,6 +3,7 @@ import { Server as HTTPServer } from 'http';
 import { ChatService } from '../modules/chat/chat.service';
 
 let io: SocketIOServer;
+const activeChatSessions = new Map<string, string | null>();
 
 export const initSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
@@ -20,6 +21,16 @@ export const initSocket = (server: HTTPServer) => {
 
     socket.on('join-user-room', (userId: string) => {
       socket.join(userId);
+    });
+
+    socket.on('set-active-chat', ({ userId, conversationId }) => {
+      if (userId) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `Setting active chat: User ${userId} -> Conv ${conversationId}`,
+        );
+        activeChatSessions.set(userId, conversationId);
+      }
     });
 
     socket.on('send-message', async (data) => {
@@ -67,6 +78,19 @@ export const initSocket = (server: HTTPServer) => {
   });
 
   return io;
+};
+
+export const isRecipientInActiveChat = (
+  userId: string,
+  conversationId: string,
+) => {
+  const activeConversationId = activeChatSessions.get(userId);
+  const isInChat = activeConversationId === conversationId;
+  // eslint-disable-next-line no-console
+  console.log(
+    `Checking active status: User ${userId}, Conv ${conversationId}, ActiveConv ${activeConversationId} -> ${isInChat}`,
+  );
+  return isInChat;
 };
 
 export const getIO = () => {
