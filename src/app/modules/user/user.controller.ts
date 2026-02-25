@@ -53,7 +53,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   const verifiedToken = req.user;
 
   const user = await userServices.updateUser(
-    userId,
+    userId as string,
     payload,
     verifiedToken as JwtPayload,
   );
@@ -97,7 +97,7 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
   const role = req.body.role;
 
   const payload = {
-    id,
+    id: id as string,
     role,
   };
   const { user, message } = await userServices.updateUserRole(payload);

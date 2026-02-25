@@ -28,7 +28,9 @@ const getAllNavbars = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleNavbar = catchAsync(async (req: Request, res: Response) => {
-  const result = await NavbarServices.getSingleNavbarFromDB(req.params.id);
+  const result = await NavbarServices.getSingleNavbarFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -39,7 +41,7 @@ const getSingleNavbar = catchAsync(async (req: Request, res: Response) => {
 
 const updateNavbar = catchAsync(async (req: Request, res: Response) => {
   const result = await NavbarServices.updateNavbarIntoDB(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   sendResponse(res, {
@@ -51,7 +53,9 @@ const updateNavbar = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteNavbar = catchAsync(async (req: Request, res: Response) => {
-  const result = await NavbarServices.deleteNavbarFromDB(req.params.id);
+  const result = await NavbarServices.deleteNavbarFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

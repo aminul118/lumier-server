@@ -31,7 +31,7 @@ const getAllHeroBanners = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleHeroBanner = catchAsync(async (req: Request, res: Response) => {
   const result = await HeroBannerServices.getSingleHeroBannerFromDB(
-    req.params.id,
+    req.params.id as string,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -43,7 +43,7 @@ const getSingleHeroBanner = catchAsync(async (req: Request, res: Response) => {
 
 const updateHeroBanner = catchAsync(async (req: Request, res: Response) => {
   const result = await HeroBannerServices.updateHeroBannerIntoDB(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   sendResponse(res, {
@@ -55,7 +55,9 @@ const updateHeroBanner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteHeroBanner = catchAsync(async (req: Request, res: Response) => {
-  const result = await HeroBannerServices.deleteHeroBannerFromDB(req.params.id);
+  const result = await HeroBannerServices.deleteHeroBannerFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -91,7 +93,7 @@ const getAllMiniBanners = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleMiniBanner = catchAsync(async (req: Request, res: Response) => {
   const result = await MiniBannerServices.getSingleMiniBannerFromDB(
-    req.params.id,
+    req.params.id as string,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -103,7 +105,7 @@ const getSingleMiniBanner = catchAsync(async (req: Request, res: Response) => {
 
 const updateMiniBanner = catchAsync(async (req: Request, res: Response) => {
   const result = await MiniBannerServices.updateMiniBannerIntoDB(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   sendResponse(res, {
@@ -115,7 +117,9 @@ const updateMiniBanner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteMiniBanner = catchAsync(async (req: Request, res: Response) => {
-  const result = await MiniBannerServices.deleteMiniBannerFromDB(req.params.id);
+  const result = await MiniBannerServices.deleteMiniBannerFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

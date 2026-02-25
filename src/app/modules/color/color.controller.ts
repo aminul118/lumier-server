@@ -28,7 +28,9 @@ const getAllColors = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleColor = catchAsync(async (req: Request, res: Response) => {
-  const result = await ColorServices.getSingleColorFromDB(req.params.id);
+  const result = await ColorServices.getSingleColorFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -38,7 +40,10 @@ const getSingleColor = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateColor = catchAsync(async (req: Request, res: Response) => {
-  const result = await ColorServices.updateColorIntoDB(req.params.id, req.body);
+  const result = await ColorServices.updateColorIntoDB(
+    req.params.id as string,
+    req.body,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -48,7 +53,7 @@ const updateColor = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteColor = catchAsync(async (req: Request, res: Response) => {
-  const result = await ColorServices.deleteColorFromDB(req.params.id);
+  const result = await ColorServices.deleteColorFromDB(req.params.id as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
