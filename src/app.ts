@@ -13,6 +13,8 @@ import compression from 'compression';
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(cors(corsOptions));
 app.use(compression());
 app.use(express.json());
