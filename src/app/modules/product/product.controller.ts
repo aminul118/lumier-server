@@ -63,7 +63,9 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.getSingleProductFromDB(req.params.id);
+  const result = await ProductServices.getSingleProductFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -140,7 +142,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   });
 
   const result = await ProductServices.updateProductIntoDB(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   sendResponse(res, {
@@ -152,7 +154,9 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.deleteProductFromDB(req.params.id);
+  const result = await ProductServices.deleteProductFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

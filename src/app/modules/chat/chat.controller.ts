@@ -40,7 +40,9 @@ const getOrCreateConversation = catchAsync(
 
 const getMessages = catchAsync(async (req: Request, res: Response) => {
   const { conversationId } = req.params;
-  const result = await ChatService.getMessagesByConversation(conversationId);
+  const result = await ChatService.getMessagesByConversation(
+    conversationId as string,
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -52,7 +54,10 @@ const getMessages = catchAsync(async (req: Request, res: Response) => {
 const markAsSeen = catchAsync(async (req: Request, res: Response) => {
   const { conversationId } = req.params;
   const authReq = req as unknown as AuthRequest;
-  await ChatService.markMessagesAsSeen(conversationId, authReq.user._id);
+  await ChatService.markMessagesAsSeen(
+    conversationId as string,
+    authReq.user._id,
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,

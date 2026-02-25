@@ -28,7 +28,9 @@ const getAllCategories = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
-  const result = await CategoryServices.getSingleCategoryFromDB(req.params.id);
+  const result = await CategoryServices.getSingleCategoryFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -39,7 +41,7 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
 
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const result = await CategoryServices.updateCategoryIntoDB(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   sendResponse(res, {
@@ -51,7 +53,9 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteCategory = catchAsync(async (req: Request, res: Response) => {
-  const result = await CategoryServices.deleteCategoryFromDB(req.params.id);
+  const result = await CategoryServices.deleteCategoryFromDB(
+    req.params.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

@@ -19,7 +19,7 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 
 const getProductReviews = catchAsync(async (req: Request, res: Response) => {
   const { productId } = req.params;
-  const result = await ReviewService.getProductReviews(productId);
+  const result = await ReviewService.getProductReviews(productId as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -32,7 +32,7 @@ const getProductReviews = catchAsync(async (req: Request, res: Response) => {
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = (req.user as any)._id;
-  const result = await ReviewService.deleteReview(id, userId);
+  const result = await ReviewService.deleteReview(id as string, userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -47,7 +47,7 @@ const checkReviewEligibility = catchAsync(
     const { productId } = req.params;
     const userId = (req.user as any)._id;
     const result = await ReviewService.checkReviewEligibility(
-      productId,
+      productId as string,
       userId,
     );
 

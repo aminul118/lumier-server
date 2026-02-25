@@ -29,7 +29,7 @@ const getAllCoupons = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleCoupon = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await CouponServices.getSingleCouponFromDB(id);
+  const result = await CouponServices.getSingleCouponFromDB(id as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -40,7 +40,10 @@ const getSingleCoupon = catchAsync(async (req: Request, res: Response) => {
 
 const updateCoupon = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await CouponServices.updateCouponIntoDB(id, req.body);
+  const result = await CouponServices.updateCouponIntoDB(
+    id as string,
+    req.body,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -51,7 +54,7 @@ const updateCoupon = catchAsync(async (req: Request, res: Response) => {
 
 const deleteCoupon = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await CouponServices.deleteCouponFromDB(id);
+  const result = await CouponServices.deleteCouponFromDB(id as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -62,7 +65,7 @@ const deleteCoupon = catchAsync(async (req: Request, res: Response) => {
 
 const validateCoupon = catchAsync(async (req: Request, res: Response) => {
   const { code } = req.params;
-  const result = await CouponServices.validateCouponFromDB(code);
+  const result = await CouponServices.validateCouponFromDB(code as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
